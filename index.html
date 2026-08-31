@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#fbf6ec" />
+    <meta name="description" content="Play an OKA listening and vocabulary duel." />
+    <title>OKA Word Duel — Quiz Arena</title>
+    <link rel="icon" href="assets/oika-logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="arena">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="OKA Online Kids Academy">
+          <img src="assets/oika-logo.png" class="logo" alt="OKA Online Kids Academy" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+          <strong class="logo-fallback" hidden>OKA</strong>
+        </a>
+
+        <div class="round-box">
+          <div class="round-line">
+            <strong id="roundText">QUESTION 1 / 10</strong>
+            <span id="streakText">STREAK &times; 0</span>
+          </div>
+          <div class="round-track" aria-hidden="true"><i id="roundProgress"></i></div>
+        </div>
+
+        <div class="timer" aria-label="Time left">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="43"></circle><circle id="timerArc" class="timer-arc" cx="50" cy="50" r="43"></circle></svg>
+          <strong id="timerValue">8</strong>
+        </div>
+
+        <button id="soundButton" class="sound-button" type="button" aria-label="Turn sound off" aria-pressed="true">&#128266;</button>
+      </header>
+
+      <section class="play-board">
+        <div id="duelStrip" class="duel-strip" aria-live="polite">
+          <span class="live-duel"><i aria-hidden="true"></i> LIVE DUEL</span>
+          <strong id="leadStatus">TIED GAME</strong>
+          <span class="point-stakes"><b>+300</b> SOLO HIT <em>&middot;</em> <b>+100</b> SHARED</span>
+        </div>
+        <section class="question-card">
+          <div class="question-meta">
+            <span id="questionType">CHOOSE THE COLOR</span>
+            <button id="listenButton" type="button">&#128266; LISTEN</button>
+          </div>
+          <div id="promptMedia" class="prompt-media" hidden><img id="promptImage" src="" alt="" /></div>
+          <div class="prompt-copy">
+            <h1 id="prompt" aria-live="polite">What color is it?</h1>
+            <p id="helper">Choose the correct answer before time runs out.</p>
+          </div>
+        </section>
+        <section id="answers" class="answers" aria-label="Answer choices"></section>
+      </section>
+
+      <section class="race" aria-label="Race progress">
+        <article id="studentCard" class="player-card student active">
+          <div class="profile student-profile"><img src="assets/student-avatar.png" alt="Irem's account avatar" /></div>
+          <div class="player-info">
+            <small>PLAYER</small>
+            <strong>IREM</strong>
+            <div class="energy"><i id="studentEnergy"></i></div>
+          </div>
+          <div class="points"><span class="dot" aria-hidden="true"></span><b id="studentScore">0</b></div>
+          <em id="studentTurbo" class="turbo-label"></em>
+        </article>
+
+        <div class="race-track">
+          <div class="track-line"></div>
+          <span class="finish">VS</span>
+          <span id="studentRunner" class="runner student-runner">&#129490;</span>
+          <span id="opponentRunner" class="runner opponent-runner"><img id="opponentRunnerAvatar" src="assets/gigi-giraffe.png" alt="" /></span>
+          <div id="opponentBubble" class="opponent-bubble" aria-live="polite">Ready? Let&rsquo;s race!</div>
+        </div>
+
+        <article id="opponentCard" class="player-card opponent">
+          <div class="points"><span class="dot" aria-hidden="true"></span><b id="opponentScore">0</b></div>
+          <div class="player-info">
+            <small>RIVAL</small>
+            <strong id="opponentName">GIGI</strong>
+            <div class="energy"><i id="opponentEnergy"></i></div>
+          </div>
+          <div class="profile opponent-profile"><img id="opponentAvatar" src="assets/gigi-giraffe.png" alt="Gigi the giraffe" /></div>
+          <em id="opponentTurbo" class="turbo-label"></em>
+        </article>
+      </section>
+
+      <output id="feedback" class="feedback" aria-live="assertive"></output>
+      <div id="countdown" class="countdown" aria-live="assertive" aria-hidden="true"></div>
+    </main>
+
+    <dialog id="matchDialog" class="match-dialog">
+      <div id="matchCard" class="match-card">
+        <img src="assets/oika-logo.png" class="match-logo" alt="OKA" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+        <strong class="dialog-logo-fallback" hidden>OKA</strong>
+        <span class="kicker">Word Duel &middot; Quiz Arena</span>
+        <h2 id="matchTitle">Finding a rival&hellip;</h2>
+        <p id="matchSubtitle">Watch the character reel.</p>
+        <div class="online-rivals">
+          <span><i aria-hidden="true"></i> RIVALS ONLINE</span>
+          <div>
+            <img src="assets/gigi-giraffe.png" alt="Gigi" />
+            <img src="assets/mimi-hamster.png" alt="Mimi" />
+            <img src="assets/bobo-monkey.png" alt="Bobo" />
+          </div>
+        </div>
+        <div class="match-stage">
+          <div class="match-player">
+            <div class="match-avatar you-avatar"><img src="assets/student-avatar.png" alt="Irem's account avatar" /></div>
+            <strong>IREM</strong>
+          </div>
+          <div class="versus">VS</div>
+          <div class="match-player">
+            <div id="reelViewport" class="match-avatar reel-viewport"><div id="reelTrack" class="reel-track"></div><span id="reelMystery">?</span></div>
+            <strong id="matchRivalName">???</strong>
+          </div>
+        </div>
+        <div class="match-rules"><span>&#9889; FAST MATCH</span><span>10 QUESTIONS</span><span>UP TO 300</span></div>
+        <div id="searchBar" class="search-bar"><i></i></div>
+        <button id="readyButton" type="button" disabled>Finding rival&hellip;</button>
+      </div>
+    </dialog>
+
+    <dialog id="resultDialog" class="result-dialog">
+      <div class="result-card">
+        <img src="assets/oika-logo.png" class="result-logo" alt="OKA Online Kids Academy" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+        <strong class="dialog-logo-fallback result-fallback" hidden>OKA</strong>
+        <div id="resultIcon" class="result-icon">&#127942;</div>
+        <span class="kicker">Duel complete</span>
+        <h2 id="resultTitle">YOU WON!</h2>
+        <p id="resultCopy">Congratulations! Find a new rival and keep the fun going.</p>
+        <div class="winner-spot">
+          <img id="winnerAvatar" src="assets/student-avatar.png" alt="Winner" />
+          <div><small>WINNER</small><strong id="winnerName">IREM</strong></div>
+        </div>
+        <div class="final-score">
+          <div><span class="final-person"><img src="assets/student-avatar.png" alt="Irem's account avatar" /></span><strong id="finalStudent">0</strong><small>IREM</small></div>
+          <b>&mdash;</b>
+          <div><img id="finalOpponentAvatar" src="assets/gigi-giraffe.png" alt="Gigi" /><strong id="finalOpponent">0</strong><small id="finalOpponentName">GIGI</small></div>
+        </div>
+        <div class="result-actions">
+          <button id="newOpponentButton" type="button">Find a New Rival &#9889;</button>
+          <button id="replayButton" class="secondary" type="button">Rematch &#8635;</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="game.js"></script>
+  </body>
+</html>
