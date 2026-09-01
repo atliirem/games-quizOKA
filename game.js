@@ -5,34 +5,41 @@ const titleCase = value => value.charAt(0).toUpperCase() + value.slice(1);
 const $ = selector => document.querySelector(selector);
 const audioCache = new Map();
 
-// Rival artwork lives in assets/rivals/<slug>.png. To add another country, add an entry
-// here and drop its portrait at that path — if the file is ever missing, that country's
-// rivals automatically fall back to a flag badge instead (see fallbackAvatar()).
+// Each portrait has one permanent name. Add new portraits to FIXED_CHARACTERS;
+// missing files automatically fall back to a flag badge (see fallbackAvatar()).
 const COUNTRIES = [
-  { slug: 'south-korea', flag: '🇰🇷', country: 'South Korea', names: ['Jiwoo', 'Minjun', 'Seoyeon', 'Haeun', 'Doyoon', 'Yuna', 'Joonho', 'Chaewon', 'Eunji', 'Taeyang'] },
-  { slug: 'brazil', flag: '🇧🇷', country: 'Brazil', names: ['Bruno', 'Camila', 'Lucas', 'Isabela', 'Rafael', 'Beatriz', 'Gabriel', 'Larissa', 'Thiago', 'Manuela'] },
-  { slug: 'saudi-arabia', flag: '🇸🇦', country: 'Saudi Arabia', names: ['Faisal', 'Layla', 'Omar', 'Sara', 'Khalid', 'Noor', 'Abdullah', 'Mariam', 'Yousef', 'Reem'] },
-  { slug: 'turkey', flag: '🇹🇷', country: 'Turkey', names: ['Emre', 'Elif', 'Kaan', 'Zeynep', 'Mert', 'Defne', 'Ege', 'Sude', 'Berk', 'Yaren'] },
-  { slug: 'japan', flag: '🇯🇵', country: 'Japan', names: ['Haruto', 'Yui', 'Sota', 'Aoi', 'Ren', 'Mio', 'Riku', 'Sakura', 'Kaito', 'Hina'] },
-  { slug: 'usa', flag: '🇺🇸', country: 'USA', names: ['Liam', 'Emma', 'Noah', 'Olivia', 'Mason', 'Ava', 'Ethan', 'Sophia', 'Jackson', 'Mia'] },
-  { slug: 'france', flag: '🇫🇷', country: 'France', names: ['Leo', 'Chloe', 'Hugo', 'Camille', 'Nathan', 'Manon', 'Louis', 'Lea', 'Antoine', 'Ines'] },
-  { slug: 'nigeria', flag: '🇳🇬', country: 'Nigeria', names: ['Chidi', 'Ada', 'Emeka', 'Ngozi', 'Tobi', 'Amara', 'Kunle', 'Chioma', 'Femi', 'Bisi'] },
-  { slug: 'india', flag: '🇮🇳', country: 'India', names: ['Arjun', 'Ananya', 'Vihaan', 'Diya', 'Aarav', 'Ishita', 'Kabir', 'Saanvi', 'Rohan', 'Meera'] },
-  { slug: 'mexico', flag: '🇲🇽', country: 'Mexico', names: ['Mateo', 'Valentina', 'Santiago', 'Ximena', 'Diego', 'Regina', 'Emiliano', 'Renata', 'Leonardo', 'Fernanda'] },
-  { slug: 'germany', flag: '🇩🇪', country: 'Germany', names: ['Finn', 'Lena', 'Lukas', 'Marie', 'Jonas', 'Greta', 'Felix', 'Klara', 'Moritz', 'Anna'] },
-  { slug: 'italy', flag: '🇮🇹', country: 'Italy', names: ['Matteo', 'Giulia', 'Luca', 'Bianca', 'Marco', 'Alessia', 'Davide', 'Chiara', 'Enzo', 'Ilaria'] },
-  { slug: 'spain', flag: '🇪🇸', country: 'Spain', names: ['Alejandro', 'Lucia', 'Pablo', 'Martina', 'Adrian', 'Carmen', 'Sergio', 'Paula', 'Alvaro', 'Marta'] },
-  { slug: 'united-kingdom', flag: '🇬🇧', country: 'United Kingdom', names: ['Oliver', 'Amelia', 'George', 'Isla', 'Harry', 'Freya', 'Jack', 'Poppy', 'Charlie', 'Ivy'] },
-  { slug: 'netherlands', flag: '🇳🇱', country: 'Netherlands', names: ['Daan', 'Sanne', 'Sem', 'Fenna', 'Bram', 'Lotte', 'Milan', 'Eva', 'Thijs', 'Roos'] },
-  { slug: 'sweden', flag: '🇸🇪', country: 'Sweden', names: ['Erik', 'Alva', 'Oskar', 'Wilma', 'Elias', 'Saga', 'Axel', 'Alma', 'Viggo', 'Freja'] },
-  { slug: 'greece', flag: '🇬🇷', country: 'Greece', names: ['Nikos', 'Eleni', 'Yiannis', 'Maria', 'Dimitris', 'Katerina', 'Petros', 'Ioanna', 'Alexandros', 'Anastasia'] },
-  { slug: 'poland', flag: '🇵🇱', country: 'Poland', names: ['Jakub', 'Zuzanna', 'Antoni', 'Julia', 'Filip', 'Zofia', 'Szymon', 'Maja', 'Kacper', 'Wiktoria'] },
-  { slug: 'portugal', flag: '🇵🇹', country: 'Portugal', names: ['Tiago', 'Matilde', 'Rodrigo', 'Carolina', 'Francisco', 'Leonor', 'Goncalo', 'Mariana', 'Duarte', 'Constanca'] },
-  { slug: 'norway', flag: '🇳🇴', country: 'Norway', names: ['Magnus', 'Ingrid', 'Emil', 'Nora', 'Odin', 'Sofie', 'Aksel', 'Thea', 'Isak', 'Silje'] }
+  { slug: 'south-korea', flag: '🇰🇷', country: 'South Korea' },
+  { slug: 'brazil', flag: '🇧🇷', country: 'Brazil' },
+  { slug: 'saudi-arabia', flag: '🇸🇦', country: 'Saudi Arabia' },
+  { slug: 'turkey', flag: '🇹🇷', country: 'Turkey' },
+  { slug: 'japan', flag: '🇯🇵', country: 'Japan' },
+  { slug: 'usa', flag: '🇺🇸', country: 'USA' },
+  { slug: 'france', flag: '🇫🇷', country: 'France' },
+  { slug: 'nigeria', flag: '🇳🇬', country: 'Nigeria' },
+  { slug: 'india', flag: '🇮🇳', country: 'India' },
+  { slug: 'mexico', flag: '🇲🇽', country: 'Mexico' }
 ];
 
-const OPPONENTS = COUNTRIES.flatMap(({ slug, flag, country, names }) => names.map(name => ({
-  name: name.toUpperCase(), country, flag, avatar: `assets/rivals/${slug}.png`, position: '50% 50%'
+const FIXED_CHARACTERS = {
+  'south-korea': [{ name: 'Minjun', file: 'south-korea-1.png' }, { name: 'Doyoon', file: 'south-korea-2.png' }, { name: 'Joonho', file: 'south-korea-3.png' }],
+  brazil: [{ name: 'Lucas', file: 'brazil-1.png' }, { name: 'Rafael', file: 'brazil-2.png' }, { name: 'Gabriel', file: 'brazil-3.png' }],
+  'saudi-arabia': [{ name: 'Omar', file: 'saudi-arabia-1.png' }, { name: 'Faisal', file: 'saudi-arabia-2.png' }, { name: 'Khalid', file: 'saudi-arabia-3.png' }],
+  turkey: [{ name: 'Mert', file: 'turkey-1.png' }, { name: 'Emre', file: 'turkey-2.png' }, { name: 'Kaan', file: 'turkey-3.png' }],
+  japan: [{ name: 'Haruto', file: 'japan-1.png' }, { name: 'Kaito', file: 'japan-2.png' }, { name: 'Sota', file: 'japan-3.png' }],
+  usa: [{ name: 'Liam', file: 'usa-1.png' }, { name: 'Mason', file: 'usa-2.png' }, { name: 'Noah', file: 'usa-3.png' }],
+  france: [{ name: 'Leo', file: 'france-1.png' }, { name: 'Chloe', file: 'france-2.png' }, { name: 'Hugo', file: 'france-3.png' }],
+  nigeria: [{ name: 'Tobi', file: 'nigeria-1.png' }, { name: 'Chidi', file: 'nigeria-2.png' }, { name: 'Emeka', file: 'nigeria-3.png' }],
+  india: [{ name: 'Arjun', file: 'india-1.png' }, { name: 'Vihaan', file: 'india-2.png' }, { name: 'Aarav', file: 'india-3.png' }],
+  mexico: [{ name: 'Mateo', file: 'mexico-1.png' }, { name: 'Diego', file: 'mexico-2.png' }, { name: 'Santiago', file: 'mexico-3.png' }]
+};
+
+const OPPONENTS = COUNTRIES.flatMap(({ slug, flag, country }) => FIXED_CHARACTERS[slug].map(character => ({
+  name: character.name.toUpperCase(),
+  country,
+  flag,
+  avatar: `assets/rivals/square/${character.file}`,
+  square: true,
+  position: '50% 50%'
 })));
 
 const QUESTIONS = [
@@ -190,7 +197,7 @@ function spinReel(opponent) {
   const track = $('#reelTrack');
   const height = viewport.clientHeight || 124;
   const sequence = [opponent, ...Array.from({ length: 18 }, () => random(OPPONENTS))];
-  track.innerHTML = sequence.map(item => `<div class="reel-face" style="height:${height}px"><img src="${item.avatar}" alt="${item.name}" style="object-position:${item.position}" onerror="this.onerror=null;this.src='${fallbackAvatar(item)}'"></div>`).join('');
+  track.innerHTML = sequence.map(item => `<div class="reel-face${item.square ? ' square' : ''}" style="height:${height}px;--avatar:url('${item.avatar}')"><img src="${item.avatar}" alt="${item.name}" style="object-position:${item.position}" onerror="this.onerror=null;this.src='${fallbackAvatar(item)}'"></div>`).join('');
   const distance = (sequence.length - 1) * height;
   track.style.transition = 'none';
   track.style.transform = `translateY(-${distance}px)`;
